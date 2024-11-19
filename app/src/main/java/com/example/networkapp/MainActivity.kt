@@ -1,5 +1,6 @@
 package com.example.networkapp
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -79,8 +80,16 @@ class MainActivity : AppCompatActivity() {
 
     // Implement this function
     private fun saveComic(comicObject: JSONObject) {
-
+        val sharedPref = getSharedPreferences("ComicPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString("comic_number", comicObject.getString("num"))
+            putString("comic_title", comicObject.getString("title"))
+            putString("comic_description", comicObject.getString("alt"))
+            putString("comic_image_url", comicObject.getString("img"))
+            apply()
+        }
     }
+
 
 
 }
