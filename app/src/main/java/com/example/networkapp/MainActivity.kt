@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         showButton.setOnClickListener {
             downloadComic(numberEditText.text.toString())
         }
+        loadSavedComic()
 
     }
 
@@ -69,14 +70,12 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-
     // Display a comic for a given comic JSON object
     private fun showComic (comicObject: JSONObject) {
         titleTextView.text = comicObject.getString("title")
         descriptionTextView.text = comicObject.getString("alt")
         Picasso.get().load(comicObject.getString("img")).into(comicImageView)
     }
-
 
     // Implement this function
     private fun saveComic(comicObject: JSONObject) {
@@ -89,7 +88,20 @@ class MainActivity : AppCompatActivity() {
             apply()
         }
     }
+    private fun loadSavedComic() {
+        val sharedPref = getSharedPreferences("ComicPrefs", Context.MODE_PRIVATE)
+        val savedComicNumber = sharedPref.getString("comic_number", null)
 
+        if (savedComicNumber != null) {
+            val savedTitle = sharedPref.getString("comic_title", "")
+            val savedDescription = sharedPref.getString("comic_description", "")
+            val savedImageUrl = sharedPref.getString("comic_image_url", "")
+            titleTextView.text = savedTitle
+            descriptionTextView.text = savedDescription
+            Picasso.get().load(savedImageUrl).into(comicImageView)
+            numberEditText.setText(savedComicNumber)
+        }
+    }
 
 
 }
