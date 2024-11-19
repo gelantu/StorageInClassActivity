@@ -47,15 +47,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Fetches comic from web as JSONObject
-    private fun downloadComic (comicId: String) {
+    private fun downloadComic(comicId: String) {
         val url = "https://xkcd.com/$comicId/info.0.json"
-        requestQueue.add (
-            JsonObjectRequest(url
-                , {showComic(it)}
-                , {}
+
+        if (comicId.isEmpty() || !comicId.all { it.isDigit() }) {
+            Toast.makeText(this, "Please enter a valid comic number", Toast.LENGTH_SHORT).show()
+            return
+        }
+        requestQueue.add(
+            JsonObjectRequest(
+                Request.Method.GET, url, null,
+                { response ->
+                    showComic(response)
+                    saveComic(response)
+                },
+                { error ->
+                    Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
             )
         )
     }
+
 
     // Display a comic for a given comic JSON object
     private fun showComic (comicObject: JSONObject) {
@@ -63,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         descriptionTextView.text = comicObject.getString("alt")
         Picasso.get().load(comicObject.getString("img")).into(comicImageView)
     }
+
 
     // Implement this function
     private fun saveComic(comicObject: JSONObject) {
